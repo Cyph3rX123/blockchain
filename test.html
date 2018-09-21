@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript file upload</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="https://wzrd.in/standalone/buffer"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  </head>
+  <script type="text/javascript">
+
+    //connection to the remix
+
+    if (typeof web3 !== 'undefined') {
+         web3 = new Web3(web3.currentProvider);
+     } else {
+         // set the provider you want from Web3.providers
+         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+     }
+     web3.eth.defaultAccount = web3.eth.accounts[0];
+     var certificate=web3.eth.contract([
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_marks",
+        "type": "string"
+      },
+      {
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "upload",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_hash",
+        "type": "string"
+      },
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "uploadhash",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_hallticket1",
+        "type": "string"
+      }
+    ],
+    "name": "show",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "showhash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]);
+     var certify =certificate.at('0x7127669f829aa8d20b6c5a5c5c0c03f2b1c93748');
+     console.log(certify);
+
+     //functions 
+
+
+    function upload() {
+      var HTNO=document.getElementById("HTNO").value;
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const ipfs = window.IpfsApi('localhost', 5001); // Connect to IPFS
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err);
+            return;
+          }
+          let url = `https://ipfs.io/ipfs/${result[0].hash}`;
+          var hashh=result[0].hash;
+          console.log(hashh);
+          console.log(`Url --> ${url}`);
+          document.getElementById("url").innerHTML= url;
+          document.getElementById("url").href= url;
+          document.getElementById("output").src = url;
+          certify.uploadhash(hashh,HTNO);
+
+        })
+      }
+      const photo = document.getElementById("photo");
+      reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+      }
+
+    function retrieve1(){
+      document.getElementById("onretrieve").style.display="none";
+      document.getElementById("shows").style.display="";
+    }
+
+    function retrieve(){
+      var htno=document.getElementById("HTNO").value;
+      var hashh=certify.showhash(htno);
+      document.getElementById('output').innerHTML="ask the student to collect the certificate at " + hashh;
+    }
+  </script>
+  <body>
+    
+    <div>
+      Enter the HTNO:<input type="text" name="HTNO" id="HTNO"><br>
+      <div id="onretrieve">Enter the file:<input type="file" name="photo" id="photo"><br>
+      <button onclick="upload()">Upload</button>
+      </div>
+      <a href="#" onclick="retrieve1()";>wanna retrieve?</a>
+      <button onclick="retrieve()"; id="shows" style="display: none">Retrieve</button>
+    </div>
+  
+    </br>
+    <p id="output"></p>
+    </br>
+    <a id="url"></a>
+    </br>
+    </br>
+    <img id="output">
+  </body>
+</html>

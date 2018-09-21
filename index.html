@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BOSS</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script src=wzrd.js></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+	<script type="text/javascript">
+    var hashh;
+    var hashh1;
+    var HTNO;
+
+    //connection to the remix
+
+    if (typeof web3 !== 'undefined') {
+         web3 = new Web3(web3.currentProvider);
+     } else {
+         // set the provider you want from Web3.providers
+         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+     }
+     web3.eth.defaultAccount = web3.eth.accounts[0];
+     var certificate=web3.eth.contract([
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_marks",
+        "type": "string"
+      },
+      {
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "upload",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "instructorAccts",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_hallticket1",
+        "type": "string"
+      }
+    ],
+    "name": "show",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "showhash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_hash",
+        "type": "string"
+      },
+      {
+        "name": "_hash1",
+        "type": "string"
+      },
+      {
+        "name": "_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "uploadhash",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "event_name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "name": "event_hallticket",
+        "type": "string"
+      }
+    ],
+    "name": "uphash",
+    "type": "event"
+  }
+]);
+     var certify =certificate.at('0xf43bc1d34c8c0597cd789fbe97d5d30aaf3fec68');
+     console.log(certify);
+
+     //functions 
+     var certifyEvent = certify.uphash();
+     var url;
+     var url1;
+
+     certifyEvent.watch(function(error, result){
+            if (!error)
+                {
+                    $("#loader").hide();
+                    $("#output").html('hash has been uploaded');
+                    document.getElementById("url").innerHTML= url;
+                    document.getElementById("url").href= url;
+                    document.getElementById("url1").innerHTML= url1;
+                    document.getElementById("url1").href= url1;
+                } else {
+                    $("#loader").hide();
+                    console.log(error);
+                }
+        });
+    function lolwhat(){
+      console.log('inhere');
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        console.log('inhere');
+        const ipfs = window.IpfsApi('localhost', 5001); // Connect to IPFS
+        const photo = document.getElementById("photo");
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err);
+            return;
+          }
+          url = `https://ipfs.io/ipfs/${result[0].hash}`;
+          hashh=result[0].hash;
+          console.log(hashh);
+          console.log(`Url --> ${url}`);
+        })
+        }
+        reader.readAsArrayBuffer(photo.files[0]);
+     }   
+        
+    function lolwhat1(){
+      const reader1 = new FileReader();
+      reader1.onloadend=function(){
+      console.log('inhere too');
+      const photo1 = document.getElementById("photo1");
+      const buf1 = buffer.Buffer(reader1.result)
+      const ipfs1 = window.IpfsApi('localhost', 5001);
+          ipfs1.files.add(buf1, (err, result) => { // Upload buffer to IPFS
+            if(err) {
+              console.error(err);
+              return;
+            }
+          url1 = `https://ipfs.io/ipfs/${result[0].hash}`;
+          hashh1=result[0].hash;
+          console.log(hashh1);
+          console.log(`Url --> ${url}`);
+          const photo1 = document.getElementById("photo1");
+        })
+      }
+      reader1.readAsArrayBuffer(photo1.files[0]);
+    }
+
+    function upload() {
+      document.getElementById('loader').style.display='block';
+      window.HTNO=document.getElementById("HTNO").value;
+      // const reader = new FileReader();
+      // const reader1 = new FileReader();
+      // reader.onloadend = function() {
+      //   console.log('inhere');
+      //   const ipfs = window.IpfsApi('localhost', 5001); // Connect to IPFS
+      //   const buf = buffer.Buffer(reader.result) // Convert data into buffer
+      //   ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+      //     if(err) {
+      //       console.error(err);
+      //       return;
+      //     }
+      //     url = `https://ipfs.io/ipfs/${result[0].hash}`;
+      //     hashh=result[0].hash;
+      //     console.log(hashh);
+      //     console.log(`Url --> ${url}`);
+      //   })
+
+      //   const buf1 = buffer.Buffer(reader1.result)
+      //     ipfs.files.add(buf1, (err, result) => { // Upload buffer to IPFS
+      //       if(err) {
+      //         console.error(err);
+      //         return;
+      //       }
+      //     let url = `https://ipfs.io/ipfs/${result[0].hash}`;
+      //     hashh1=result[0].hash;
+      //     console.log(hashh1);
+      //     console.log(`Url --> ${url}`);
+          
+
+        certify.uploadhash(hashh1,hashh,HTNO,(err, res) =>{
+            if(err){
+              console.log(err);
+            }
+          });
+
+           
+      }
+
+      // const photo = document.getElementById("photo");
+      // const photo1 = document.getElementById("photo1");
+       
+      // reader1.readAsArrayBuffer(photo1.files[0]);// Read Provided File
+      // reader.readAsArrayBuffer(photo.files[0]);
+
+      
+  </script>
+
+
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="images/img-01.png" alt="IMG">
+				</div>
+
+				<form class="login100-form validate-form">
+					<span class="login100-form-title">
+						Upload certificate 
+					</span>
+
+					<div class="wrap-input100 ">
+						<input class="input100" type="text" name="email" placeholder="Hallticket No" id="HTNO">
+						<span class="focus-input100"></span>
+						<!-- <span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span> -->
+					</div>
+
+
+					<div style="padding-bottom: 15px;">
+						<span class="btn btn-primary btn-block btn-danger btn-file btn-lg round">
+    						certificate <input type="file" id="photo" onchange="lolwhat()">
+						</span>
+					</div>
+
+					<div>
+						<span class="btn btn-primary btn-block btn-danger btn-file btn-lg round">
+    						Analytics <input type="file" id="photo1" onchange="lolwhat1()">
+						</span>
+					</div>
+<!-- 					<div class="wrap-input100 validate-input" data-validate = "Password is required">
+						<input class="input100" type="password" name="pass" placeholder="Password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div> -->
+					
+					<div class="container-login100-form-btn">
+						<button type="button" class="login100-form-btn" onclick="upload()">
+							Upload
+						</button>
+					</div>
+
+<!-- 					<div class="text-center p-t-12">
+						<span class="txt1">
+							Forgot
+						</span>
+						<a class="txt2" href="#">
+							Username / Password?
+						</a>
+					</div> -->
+					<div style="margin-left: 95px;">
+						<img id="loader" width ="100" height="100" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+					</div>
+          <br>
+          <br>
+          <br>
+					<p id="output"> </p>
+					<a id="url"></a>
+          <a id="url1"></a>
+
+					<div class="text-center p-t-136">
+						<a class="txt2" href="retrieve.html">
+							retrieve?
+							<!-- <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i> -->
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	
+
+	
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/tilt/tilt.jquery.min.js"></script>
+	<script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>
