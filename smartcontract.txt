@@ -1,0 +1,51 @@
+pragma solidity ^0.4.18;
+
+contract mark{
+    
+struct student {
+string marks;
+string name;   
+string hallticket;
+string hashh;
+string hashh1;
+}
+
+address owner;
+mapping(string=>student) students;
+string[] public instructorAccts;
+
+
+constructor() public{
+    owner=msg.sender;
+}
+modifier ifowner(){
+    require(owner==msg.sender);
+    _;
+}
+
+event uphash(
+       string event_name,
+       string event_hallticket
+    );
+
+function upload(string _marks,string _name,string _hallticket) public ifowner{
+    students[_hallticket].marks=_marks;
+    students[_hallticket].name=_name;
+    students[_hallticket].hallticket=_hallticket;
+}
+
+function show(string _hallticket1) constant public returns(string){
+
+    return(students[_hallticket1].marks);
+}
+
+function uploadhash(string _hash,string _hash1,string _hallticket) public ifowner{
+    students[_hallticket].hallticket=  _hallticket;
+    students[_hallticket].hashh= _hash;
+    students[_hallticket].hashh1= _hash1;
+    emit uphash(_hash,_hallticket);
+}
+function showhash(string _hallticket) constant public returns(string,string){
+    return(students[_hallticket].hashh,students[_hallticket].hashh1);
+}
+}
